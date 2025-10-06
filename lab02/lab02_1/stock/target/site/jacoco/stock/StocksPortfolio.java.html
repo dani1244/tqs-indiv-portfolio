@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StocksPortfolio.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TQS Lab02 - Unit Tests and Mocks</a> &gt; <a href="index.source.html" class="el_package">stock</a> &gt; <span class="el_source">StocksPortfolio.java</span></div><h1>StocksPortfolio.java</h1><pre class="source lang-java linenums">package stock;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class StocksPortfolio {
+    private final List&lt;Stock&gt; stocks;
+    private final IStockMarketService stockMarketService;
+    
+    /**
+     * Construtor que aceita o serviço de mercado (Dependency Injection)
+     */
+<span class="fc" id="L14">    public StocksPortfolio(IStockMarketService stockMarketService) {</span>
+<span class="fc bfc" id="L15" title="All 2 branches covered.">        if (stockMarketService == null) {</span>
+<span class="fc" id="L16">            throw new IllegalArgumentException(&quot;StockMarketService cannot be null&quot;);</span>
+        }
+        
+<span class="fc" id="L19">        this.stocks = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L20">        this.stockMarketService = stockMarketService;</span>
+<span class="fc" id="L21">    }</span>
+    
+
+    public void addStock(Stock stock) {
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        if (stock == null) {</span>
+<span class="fc" id="L26">            throw new IllegalArgumentException(&quot;Stock cannot be null&quot;);</span>
+        }
+<span class="fc" id="L28">        stocks.add(stock);</span>
+<span class="fc" id="L29">    }</span>
+    
+   
+    public double totalValue() {
+<span class="fc" id="L33">        return stocks.stream()</span>
+<span class="fc" id="L34">                .mapToDouble(stock -&gt; {</span>
+<span class="fc" id="L35">                    double price = stockMarketService.getPrice(stock.getSymbol());</span>
+<span class="fc" id="L36">                    return price * stock.getQuantity();</span>
+                })
+<span class="fc" id="L38">                .sum();</span>
+    }
+    
+   
+    public List&lt;Stock&gt; mostValuableStocks(int topN) {
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (topN &lt;= 0) {</span>
+<span class="fc" id="L44">            throw new IllegalArgumentException(&quot;topN must be positive&quot;);</span>
+        }
+        
+<span class="fc" id="L47">        return stocks.stream()</span>
+<span class="fc" id="L48">                .sorted((stock1, stock2) -&gt; {</span>
+<span class="fc" id="L49">                    double value1 = stockMarketService.getPrice(stock1.getSymbol()) * stock1.getQuantity();</span>
+<span class="fc" id="L50">                    double value2 = stockMarketService.getPrice(stock2.getSymbol()) * stock2.getQuantity();</span>
+<span class="fc" id="L51">                    return Double.compare(value2, value1); // Ordem decrescente</span>
+                })
+<span class="fc" id="L53">                .limit(topN)</span>
+<span class="fc" id="L54">                .collect(Collectors.toList());</span>
+    }
+    
+    /**
+     * Retorna todas as ações do portfólio
+     */
+    public List&lt;Stock&gt; getStocks() {
+<span class="fc" id="L61">        return new ArrayList&lt;&gt;(stocks); </span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
