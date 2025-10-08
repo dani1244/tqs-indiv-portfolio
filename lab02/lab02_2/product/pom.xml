@@ -132,10 +132,13 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${maven-failsafe-plugin.version}</version>
                 <configuration>
-                    <!-- Inclui apenas testes de integração -->
+                    <!-- Inclui apenas testes de integração (sufixo IT) -->
                     <includes>
                         <include>**/*IT.java</include>
                     </includes>
+                    <excludes>
+                        <exclude>**/*Test.java</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>

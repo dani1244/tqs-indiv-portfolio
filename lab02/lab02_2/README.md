@@ -453,11 +453,11 @@ mvn compile
 
 ## Próximos Passos
 
-- [ ] **Parte 2.3:** Implementar HTTP Client real
-- [ ] **Parte 2.3:** Criar testes de integração (IT)
-- [ ] **Parte 2.3:** Configurar failsafe plugin
-- [ ] **Parte 2.3:** Comparar testes unitários vs integração
-- [ ] Atualizar README principal com Parte 2
+-  **Parte 2.3:** Implementar HTTP Client real
+-  **Parte 2.3:** Criar testes de integração (IT)
+-  **Parte 2.3:** Configurar failsafe plugin
+-  **Parte 2.3:** Comparar testes unitários vs integração
+-  Atualizar README principal com Parte 2
 
 ---
 
