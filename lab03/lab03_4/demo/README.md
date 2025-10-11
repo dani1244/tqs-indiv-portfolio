@@ -288,7 +288,7 @@ GET http://localhost:8080/bookings/invalidtoken
 ---
 
 
-## 📦 Dependências do Projeto
+## Dependências do Projeto
 
 ```xml
 <!-- Spring Boot Starters -->
