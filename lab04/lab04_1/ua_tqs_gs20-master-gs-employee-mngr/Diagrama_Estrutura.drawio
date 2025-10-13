@@ -1,0 +1,71 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0" version="28.2.5">
+  <diagram name="Página-1" id="KgrpcMF--NqX6FbayZGn">
+    <mxGraphModel dx="1678" dy="858" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="taBajOEhxPCd0AUKcR-R-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="taBajOEhxPCd0AUKcR-R-19">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="353" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-19" value="" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="258.13" y="20" width="190" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="taBajOEhxPCd0AUKcR-R-17" target="taBajOEhxPCd0AUKcR-R-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-17" value="" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="263.75" y="291.25" width="178.75" height="178.75" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-1" value="@RestController &#xa;EmployeeRestController &#xa;- Endpoints HTTP" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="277.5" y="70" width="150" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-2" value="&lt;div&gt;Boundary Layer&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="297.5" y="30" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-3" value="&lt;div&gt;@Service&lt;/div&gt;&lt;div&gt;EmployeeServiceImpl&amp;nbsp;&lt;br&gt;- Lógica de negócio&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="277.5" y="340" width="150" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-6" value="Service Layer" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="297.5" y="300" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="taBajOEhxPCd0AUKcR-R-10" target="taBajOEhxPCd0AUKcR-R-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-10" value="" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="265" y="567.5" width="185" height="185" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-7" value="@Repository&amp;nbsp;&lt;br&gt;EmployeeRepository&amp;nbsp;&lt;br&gt;- Acesso à base de dados (JPA)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="282.5" y="620" width="150" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-8" value="Data Layer  " style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="312.5" y="590" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-9" value=" Database (H2 in-memory)&lt;br&gt;@Entity: Employee " style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="227.5" y="820" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="taBajOEhxPCd0AUKcR-R-22">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="450" y="93" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-22" value="C, D, E" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="520" y="78" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-25" value="B" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="500" y="348" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.991;entryY=0.402;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="taBajOEhxPCd0AUKcR-R-25" target="taBajOEhxPCd0AUKcR-R-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-27" value="A" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="506" y="618" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="taBajOEhxPCd0AUKcR-R-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.014;entryY=0.339;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="taBajOEhxPCd0AUKcR-R-27" target="taBajOEhxPCd0AUKcR-R-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
