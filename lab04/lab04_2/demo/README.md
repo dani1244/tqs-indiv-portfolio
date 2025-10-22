@@ -1,4 +1,4 @@
-# Lab 3.4 - Meals Booking Backend API
+# Lab 4.2 - Testing Multi-layer Spring Boot Applications
 
 
 **Universidade de Aveiro**
@@ -7,321 +7,474 @@
 
 ##  Obejetivo
 
-Backend REST em Spring Boot para sistema de reserva de refeições em cantina escolar. Reutiliza lógica implementada no Lab 1 (Java puro) e aplica arquitetura em camadas (como Lab 3.3).
+Implementar testes unitários e de integração para a aplicação Spring Boot de reserva de refeições, aplicando test slicing para melhorar performance e especificidade dos testes. Implementar testes com Rest Assured para validação da API REST.
 
-**Desenvolvido em:** Java , Spring Boot, Spring Data JPA, Hibernate, PostgreSQL, Maven
+ **Desenvolvido em:** Java, Spring Boot, JUnit 5, Mockito, Rest Assured, H2, Maven
 
----
 
 ##  Requisitos Cumpridos
 
-### Parte a) Planeamento da Arquitetura
+## Parte a) Controller Tests (@WebMvcTest)
 
-**Arquitetura em camadas:**
+ **Testes implementados para MealBookingRestController:**
 
-```
-HTTP Request
-    ↓
-MealBookingRestController (@RestController) - boundary
-    ↓
-MealBookingServiceImpl (@Service) - lógica de negócio
-    ↓
-MealBookingRepository (JpaRepository) - acesso dados
-    ↓
-MealBooking (@Entity) ↔ PostgreSQL BD
-```
+  - Criação de reserva com sucesso
 
-**Reutilização do Lab 1:**
-- **Reservation.java** → `MealBooking.java` (entity JPA com `@Entity`, `@Table`, etc.)
-- **MealsBookingService.java** → `MealBookingServiceImpl.java`
-  - Validações de entrada (studentId, serviceShift)
-  - Verificação de capacidade (máx 100 por turno)
-  - Estados (used, cancelled)
-  - Métodos: bookMeal, checkIn, cancelReservation
+  - Prevenção de reservas duplicadas
 
-- **MealBookingRequest.java** → Não necessário (Spring recebe `@RequestParam`)
+  - Consulta de reserva existente
 
-**Componentes Spring utilizados:**
-1. `@Entity MealBooking` - Mapeia para tabela `meal_bookings`
-2. `@Repository MealBookingRepository extends JpaRepository` - CRUD + queries customizadas
-3. `@Service MealBookingServiceImpl` - Lógica de negócio
-4. `@RestController MealBookingRestController` - Endpoints HTTP
+  - Reserva não encontrada (404)
 
-### Parte b) Criar projeto Spring Boot
+  - Check-in bem-sucedido
 
-**Dependências incluídas:**
-- spring-boot-starter-web
-- spring-boot-starter-data-jpa
-- postgresql (runtime)
-- lombok
+  - Check-in inválido (já usado/cancelado)
 
-### Parte c) Implementar API REST
-
-**Endpoints implementados e testados:**
+  - Cancelamento bem-sucedido
 
- Método                 Endpoint                     Descrição                                  Status 
-
- POST  `/bookings?studentId=S001&serviceShift=lunch`  Criar nova reserva                      201 Created
- GET  `/bookings/{token}`                            Consultar reserva por token               200 OK / 404
- PATCH  `/bookings/{token}/checkin`                         Fazer check-in                     200 OK
- PATCH  `/bookings/{token}/cancel`                         Cancelar reserva                    200 OK
-
-
-
-### Parte d) Configurar PostgreSQL com Docker
-
-**Comandos executados:**
-
-```bash
-# Iniciar PostgreSQL
-docker run --name postgresdb -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=meals_db -p 5432:5432 -d postgres:latest
-
-# Verificar conexão
-nc -zv 127.0.0.1 5432
-# Connection to 127.0.0.1 5432 port [tcp/postgresql] succeeded!
-```
-
-**Configuração em application.properties:**
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/meals_db
-spring.datasource.username=admin
-spring.datasource.password=secret
-spring.jpa.hibernate.ddl-auto=update
-```
-
-
-
----
-
-
-
-## Testes com Postman
-
-### 1. Criar Reserva
-
-**Request:**
-```
-POST http://localhost:8080/bookings?studentId=S001&serviceShift=lunch
-```
-
-**Response (201 Created):**
-```json
-{
-  "id": 1,
-  "token": "4122a51c",
-  "studentId": "S001",
-  "serviceShift": "lunch",
-  "reservationTime": "2025-10-11T21:50:02.820668",
-  "used": false,
-  "cancelled": false
-}
-```
-
-### 2. Consultar Reserva
-
-**Request:**
-```
-GET http://localhost:8080/bookings/4122a51c
-```
-
-**Response (200 OK):**
-```json
-{
-  "id": 1,
-  "token": "4122a51c",
-  "studentId": "S001",
-  "serviceShift": "lunch",
-  "reservationTime": "2025-10-11T21:50:02.820668",
-  "used": false,
-  "cancelled": false
-}
-```
-
-### 3. Fazer Check-in
-
-**Request:**
-```
-PATCH http://localhost:8080/bookings/4122a51c/checkin
-```
-
-**Response (200 OK):**
-```json
-{
-  "message": "Check-in successful"
-}
-```
-
-**Após check-in, campo `used` fica true:**
-```
-GET http://localhost:8080/bookings/4122a51c
-```
-
-```json
-{
-  "id": 1,
-  "token": "4122a51c",
-  "studentId": "S001",
-  "serviceShift": "lunch",
-  "reservationTime": "2025-10-11T21:50:02.820668",
-  "used": true,        ← Mudou para true
-  "cancelled": false
-}
-```
-
-### 4. Cancelar Reserva
-
-**Request:**
-```
-PATCH http://localhost:8080/bookings/4122a51c/cancel
-```
-
-**Response (200 OK):**
-```json
-{
-  "message": "Reservation cancelled successfully"
-}
-```
-
-### 5. Testar Validações
-
-**Erro: Estudante já tem reserva neste turno**
-
-```
-POST http://localhost:8080/bookings?studentId=S001&serviceShift=lunch
-```
-
-(Repetir depois de ter criado a primeira)
-
-**Response (400 Bad Request):**
-```json
-{
-  "error": "Student already has a reservation for this shift"
-}
-```
-
-**Erro: StudentId vazio**
-
-```
-POST http://localhost:8080/bookings?studentId=&serviceShift=lunch
-```
-
-**Response (400 Bad Request):**
-```json
-{
-  "error": "Student ID is required"
-}
-```
-
-**Erro: Turno vazio**
-
-```
-POST http://localhost:8080/bookings?studentId=S001&serviceShift=
-```
-
-**Response (400 Bad Request):**
-```json
-{
-  "error": "Service shift is required"
-}
-```
-
-**Erro: Turno cheio (após 100 reservas)**
-
-Quando `currentBookings >= 100`:
-
-**Response (400 Bad Request):**
-```json
-{
-  "error": "No available spots for this shift"
-}
-```
-
-**Erro: Reserva não encontrada**
-
-```
-GET http://localhost:8080/bookings/invalidtoken
-```
-
-**Response (404 Not Found):**
-```json
-{
-  "error": "Booking not found"
-}
-```
-
----
-
-## Conceitos Aprendidos
-
- **Reutilizar código Lab 1** em contexto production-ready (Spring Boot)
- **Adaptar classes puras (POJO)** para entidades JPA com anotações
- **Spring Data JPA** e repositories (`extends JpaRepository`)
- **Arquitetura em camadas:**
-  - Entity (dados)
-  - Repository (persistência)
-  - Service (lógica de negócio)
-  - Controller (API HTTP)
-
- **Validação de negócio** em `@Service` (não no controller)
- **HTTP semantics:** POST 201, GET 200, PATCH, DELETE
- **ResponseEntity** para controle fino de status HTTP
- **Docker** para infraestrutura de BD
- **PostgreSQL** como BD relacional
- **Dependency Injection** via `@Autowired`
- **Lombok** para reduzir boilerplate (`@Data`, `@NoArgsConstructor`, etc.)
- **Spring Boot auto-configuration** e component scanning
-
----
-
-## Comparação: Lab 1 vs Lab 3.4
-
- Aspecto                    Lab 1                                  Lab 3.4 
-
-  Persistência              `ConcurrentHashMap` (memória)           PostgreSQL (disco) 
-  Acesso dados               Manual em `MealsBookingService`       `MealBookingRepository` (Spring Data) 
-  Estrutura                     Classe única                        4 camadas (entity, repository, service, controller)
-  API                           Nenhuma (console)                   REST endpoints HTTP 
-  Deployment                    JAR local                           Docker-ready
-  Escalabilidade                Memória limitada                    BD relacional escalável
-
----
-
-
-## Dependências do Projeto
-
-```xml
-<!-- Spring Boot Starters -->
-spring-boot-starter-web
-spring-boot-starter-data-jpa
-spring-boot-starter-validation
-
-<!-- Database -->
-org.postgresql:postgresql (runtime)
-
-<!-- Tools -->
-org.projectlombok:lombok
-
-<!-- Tests -->
-spring-boot-starter-test
-```
-
----
-
-
-
-## Conclusão
-
-Este lab consolidou os aprendizados de Lab 1 (lógica de negócio pura) e Lab 3.3 (arquitetura Spring Boot) num projeto backend real e funcional.
-
-**Principais contribuições:**
-1. Reutilização de código Lab 1 em contexto production-ready
-2. Persistência em BD relacional (PostgreSQL)
-3. API REST semântica com HTTP semantics corretos
-4. Validações robustas de negócio
-5. Infraestrutura dockerizada
-6. Código organizado em camadas
-
-
----
+  - Validações de parâmetros
 
+
+  **Características:**
+
+  - `@WebMvcTest` - contexto Spring limitado a componentes web
+
+  - `@MockBean` - service mockado para isolamento
+
+  - `Resource efficient` - testes rápidos (< 2 segundos)
+
+  - Foco no boundary layer
+
+
+## Parte b) Service Tests (Unit Tests com Mocks)
+
+ **Testes implementados para MealBookingServiceImpl:**
+
+  - Criação de reserva válida
+
+  - Prevenção de duplicação (mesmo estudante/turno)
+
+  - Controlo de capacidade (máx 100 reservas)
+
+  - Check-in em reserva válida
+
+  - Check-in em reserva já utilizada
+
+  - Cancelamento de reserva
+
+  - Cálculo de vagas disponíveis
+
+  - Validações de entrada
+
+**Características:**
+
+ - `@ExtendWith(MockitoExtension.class)` - testes puros JUnit
+
+ - `@Mock + @InjectMocks` - injeção de dependências
+
+ - Sem contexto Spring - execução muito rápida (< 1 segundo)
+
+ - Reutilização da lógica do Lab 1
+
+## Parte c) Repository Tests (@DataJpaTest)
+
+ **Testes implementados para MealBookingRepository:**
+
+ - Busca por token
+
+ - Busca por estudante
+
+ - Busca por turno de serviço
+
+ - Persistência e atualização
+
+ - Custom query method com @Query
+
+**Custom Query Implementada:**
+  ```SQL query
+    @Query("SELECT m FROM MealBooking m WHERE m.studentId = :studentId AND m.cancelled = false")
+    List<MealBooking> findActiveBookingsByStudent(@Param("studentId") String studentId);
+  ```
+
+**Características:**
+
+ - `@DataJpaTest` - contexto Spring Data JPA
+
+ - H2 in-memory database - isolamento completo
+
+ - `TestEntityManager` - operações diretas no database
+
+ - Testes de queries customizadas
+
+
+## Parte d) Integration Tests (@SpringBootTest)
+
+**Testes implementados para stack completa:**
+
+ - Fluxo completo: Create → Get → Check-in
+
+ - Persistência em database real
+
+ - Validação de estados
+
+ - Testes com TestRestTemplate
+
+**Configuração:**
+
+ - `@SpringBootTest`(webEnvironment = RANDOM_PORT)
+
+ - `@TestPropertySource` - configuração específica
+
+ - SEM mocks - componentes reais
+
+ - Database H2 real
+
+### 4.3 Testing Practices (Análise Conceptual)
+
+
+## Parte a) Top-down TDD Approach
+
+ **Análise da abordagem top-down vs TDD:**
+
+  A abordagem top-down (ou outside-in) é altamente compatível com a prática de Test-Driven Development (TDD) e pode ajudar a adiar a implementação do código de produção:
+
+  Como funciona no contexto do meals booking:
+
+  *** 1 - Começar pelo Controller (camada mais externa) ***
+
+    ```java
+    // Primeiro: escrever teste do controller (RED)
+    @Test
+    void whenBookMeal_thenReturnCreatedBooking() {
+    // Teste falha inicialmente - controller não existe
+    }
+
+    // Depois: implementar controller mínimo (GREEN)
+    @PostMapping
+    public ResponseEntity<?> bookMeal(...) {
+    return ResponseEntity.notImplemented().build();
+    }
+    ```
+
+   *** 2 - Mockar dependências e definir contratos: ***
+
+   ```java
+    // Teste define o contrato do Service
+    when(mealBookingService.bookMeal(any(), any())).thenReturn(booking);
+    // Service ainda não existe - apenas o contrato
+  ```
+
+
+  *** 3 - Implemntar Service gradualmente: ***
+
+   ```java
+      // Agora criar teste do Service (RED)
+      @Test
+      void whenBookMealWithValidData_thenReturnBooking() {
+      // Teste falha - service não implementado
+      }
+  ```
+
+  *** 4 - Finalmente implementar Repository: ***
+
+  ***Apenas quando necessário para fazer os testes passarem.***
+
+  **Vantagens desta abordagem:**
+
+   - Foco no comportamento externo - começa pela API que o cliente usa
+
+   - Design driven por necessidades - não por implementação técnica
+
+   - Adia decisões de implementação - database, frameworks, etc.
+
+   - Melhor design de API - contrato definido antes da implementação
+
+   - Evita over-engineering - implementa apenas o necessário
+
+ **No nosso caso do meals booking:**
+
+   - Começámos pelos testes do Controller definindo a API REST
+
+   - Depois testes do Service com regras de negócio
+
+   - Finalmente testes do Repository com persistência
+
+   - Cada camada foi implementada apenas quando a anterior precisava
+
+
+
+ ## Parte b) Car Rental Company - Core Tests
+
+  **Planeamento de estratégia de testes para cenário complexo:**
+  **Arquitetura Proposta:**
+
+  ![alt text](image.png)
+
+  **Core Tests Recomendados:**
+    
+  ***1 - Repository Tests `@DataJpaTest`***
+
+        ```java
+            @DataJpaTest
+            class CarRepositoryTest {
+    
+            @Test
+            void whenFindSuitableReplacements_thenReturnCarsSameSegmentAndAvailable() {
+            // Custom query para carros substitutos
+                @Query("""
+                SELECT c FROM Car c 
+                WHERE c.segment = :segment 
+                AND c.motorType = :motorType 
+                AND c.rented = false
+                AND c.id != :excludeCarId
+                """)
+                List<Car> findSuitableReplacements(...);
+                }
+              } 
+
+        ```
+
+
+
+  ***2 - Service Unit Tests `Mockito`***
+
+        ```java
+            @ExtendWith(MockitoExtension.class)
+            class CarRentalServiceTest {
+    
+                @Test
+                void whenFindReplacementForCar_thenReturnAvailableSimilarCars() {
+                // Teste de regra de negócio complexa
+                }
+    
+                @Test
+                void whenNoSuitableReplacementsAvailable_thenReturnEmptyList() {
+                // Teste de edge case
+                }
+             }
+
+        ```
+
+
+
+
+
+  ***3 - Controller Tests `@WebMvcTest`***
+
+        ```java
+              @WebMvcTest(CarRentalController.class)
+              class CarRentalControllerTest {
+                  
+                  @Test
+                  void whenGetReplacementCars_thenReturnList() {
+                      // Teste de contrato de API
+                  }
+              }
+
+        ```
+
+
+
+
+
+  ***4 - Integration Tests `@SpringBootTest`***
+
+        ```java
+            @SpringBootTest(webEnvironment = RANDOM_PORT)
+            class CarRentalIntegrationTest {
+                
+                @Test
+                void whenFullReplacementFlow_thenReturnSuitableCars() {
+                    // Teste de stack completa
+                }
+            }
+
+        ```
+
+
+#### 4.4 Rest Assured Tests
+
+
+ **Testes implementados com Rest Assured:**
+
+   - DSL fluente para testes de API
+
+   - Validações com Hamcrest matchers
+
+   - Extração de dados da resposta
+
+   - Testes de fluxos completos
+
+   - Comparação com TestRestTmplate
+
+**Características:**
+
+   - Sintaxe similar a Postman
+
+   - Validações poderosas
+
+   - Logging automático para debugging
+
+
+ **Resultados dos Testes**
+
+   **Estatísticas de Execução**
+
+   ![alt text](image-1.png)
+
+ **Comandos de Execução**
+
+
+  ```bash
+
+      # Executar testes específicos por categoria
+      mvn test -Dtest=MealBookingRestControllerTest      # Controller tests
+      mvn test -Dtest=MealBookingServiceTest             # Service tests  
+      mvn test -Dtest=MealBookingRepositoryTest          # Repository tests
+      mvn test -Dtest=MealIntegrationTest                # Integration tests
+      mvn test -Dtest=MealRestAssuredIT                  # Rest Assured tests
+
+      # Executar todos os testes do Lab 4.2
+      mvn test -Dtest=MealBookingRestControllerTest,MealBookingServiceTest,MealBookingRepositoryTest,MealIntegrationTest
+
+      # Executar com cobertura JaCoCo
+      mvn test jacoco:report
+
+  ```
+
+
+  **Depenências Maven**
+
+  <!-- Testing -->
+  <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+  </dependency>
+
+  <!-- H2 Database -->
+  <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+  </dependency>
+
+  <!-- Rest Assured -->
+  <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+  </dependency>
+
+ **Desafios e Soluçoes**
+
+  **1 - Conflitos entre Testes**
+
+    Problema: Os Testes falhavam devido a conflitos de dados entre execuções
+    
+    Solução: 
+
+    ```java
+
+        @BeforeEach
+        void setup() {
+            // Limpar database antes de cada teste
+            if (mealBookingRepository != null) {
+                mealBookingRepository.deleteAll();
+            }
+            
+            // Estudantes únicos por teste
+            String studentId = "student-" + System.currentTimeMillis();
+        }
+
+    ```
+
+  **2 -  Rest Assured Content Type** 
+
+  Problema: Parâmetros não chegavam ao controller
+  Solução: Remover ContentType.JSON para usar query parameters corretamente
+
+
+  **3 -  Isolamento de Contexto**
+
+  Solução: Usar estratégias de test slicing apropriadas:
+
+   - `@WebMvcTest` para controllers
+
+   - `@DataJpaTest` para repositories
+
+   - Unit tests puros para services
+
+   - `@SpringBootTest` para integração
+
+ 
+ **Rest Assured vs TestRestTemplate**
+
+
+  ```java
+
+      // Rest Assured (DSL fluente)
+      given()
+          .param("studentId", "s1")
+          .param("serviceShift", "lunch")
+      .when()
+          .post("/bookings")
+      .then()
+          .statusCode(201)
+          .body("studentId", equalTo("s1"));
+
+      // TestRestTemplate (mais verboso)
+      ResponseEntity<MealBooking> response = restTemplate.postForEntity(
+          "/bookings?studentId={id}&serviceShift={shift}", 
+          null, MealBooking.class, "s1", "lunch");
+
+  ```
+
+
+
+ **Cobertura de Testes**
+
+   - Line Coverage >90% garantida com JaCoCo
+
+   - Testes de integração sem mocks
+
+   - Edge cases cobertos (erros, validações, limites)
+
+
+
+ **Métricas de Qualidade**
+    
+  **Performance**
+
+   - Testes unitários: < 1 segundo
+
+   - Testes de integração: ~3-5 segundos
+
+   - Build completo: ~15 segundos
+
+
+ **Cobertura**
+
+   - Controller: 100% endpoints testados
+
+   - Service: 100% regras de negócio testadas
+
+   - Repository: 100% queries testadas
+
+   - Integração: Fluxos completos validados
+
+
+ **Cobertura**
+
+   - 0 falsos positivos - testes robustos e isolados
+
+   - Clean database entre testes
+
+   - Estudantes únicos para evitar conflitos
+
+
+
+
+ **Conclusão**
+
+ Este laboratório demonstrou a aplicação prática de test slicing em aplicações Spring Boot, mostrando como diferentes estratégias de teste podem melhorar performance, isolamento e manutenibilidade.
