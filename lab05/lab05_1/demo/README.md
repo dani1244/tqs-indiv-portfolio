@@ -455,3 +455,44 @@ Este laboratório demonstrou a aplicação prática de automação de testes na 
 1. **Abordagem Tradicional** - Controlo total mas mais verbosa
 2. **Selenium-Jupiter** - Moderna, limpa e eficiente
 3. **Firefox em Headless** - Solução estável para Linux
+
+
+
+# Adiçao do do Exercicio 5.3
+
+## Exercício 5.3 - Interagir com Formulários Web (Slow Calculator)
+
+## Objetivo
+Automatizar a interação com uma aplicação web dinâmica, simulando o comportamento de um utilizador real num formulário (a Slow Calculator), validando o resultado apresentado após a execução de uma operação matemática.
+
+**Browser:** Firefox (headless mode)
+**Framework:** Selenium WebDriver + JUnit 5
+**Gestor de Driver:** WebDriverManager
+
+## Descrição
+
+Neste exercício, foi utilizada a aplicação https://bonigarcia.dev/selenium-webdriver-java/slow-calculator.html.
+O teste automatiza o processo de:
+
+ - Aceder à calculadora online
+
+ - Inserir o delay (tempo de espera)
+
+ - Executar a operação 7 + 3 =
+
+ - Esperar que o resultado “10” apareça
+
+ - Validar o valor exibido no ecrã
+
+
+## Características Técnicas
+
+![alt text](image-1.png)
+
+## Conclusão
+
+O exercício 5.3 amplia o trabalho anterior ao demonstrar interações complexas com elementos web,
+com foco em sincronização dinâmica, manipulação de campos, cliques e validação de resultados calculados.
+
+A solução utiliza Firefox em modo headless para garantir estabilidade e portabilidade,
+enquanto o uso de WebDriverWait assegura que os testes esperem corretamente pelas alterações no DOM.
