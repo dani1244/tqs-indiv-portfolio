@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Console appender -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logger for test package -->
+    <logger name="blazedemo" level="INFO"/>
+    
+    <!-- Reduce Selenium logging noise -->
+    <logger name="org.openqa.selenium" level="WARN"/>
+    <logger name="org.apache.hc" level="WARN"/>
+    
+    <!-- Selenium-Jupiter logging -->
+    <logger name="io.github.bonigarcia" level="INFO"/>
+
+    <!-- Root logger -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
