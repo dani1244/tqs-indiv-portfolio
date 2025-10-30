@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: bookstore.RunCucumberTest
--------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 126.0 s -- in bookstore.RunCucumberTest
