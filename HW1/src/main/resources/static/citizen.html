@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área do Cidadão - ZeroMonos</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/citizen.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="citizen-page">
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <a href="/" class="back-link">
+                <i class="fas fa-arrow-left"></i> Voltar ao Início
+            </a>
+            <div class="header-content">
+                <div class="header-icon">
+                    <i class="fas fa-user-circle fa-3x"></i>
+                </div>
+                <h1>Área do Cidadão</h1>
+                <p>Agende a recolha dos seus resíduos volumosos</p>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Main Content -->
+        <div class="content-grid">
+            <!-- Create Booking Section -->
+            <div class="main-section">
+                <div class="section-card">
+                    <div class="card-header">
+                        <i class="fas fa-edit"></i>
+                        <h2>Novo Pedido de Recolha</h2>
+                    </div>
+
+                    <form id="bookingForm">
+                        <!-- Progress Steps -->
+                        <div class="progress-steps">
+                            <div class="step active" data-step="1">
+                                <div class="step-circle">1</div>
+                                <span>Localização</span>
+                            </div>
+                            <div class="step" data-step="2">
+                                <div class="step-circle">2</div>
+                                <span>Itens</span>
+                            </div>
+                            <div class="step" data-step="3">
+                                <div class="step-circle">3</div>
+                                <span>Agendamento</span>
+                            </div>
+                            <div class="step" data-step="4">
+                                <div class="step-circle">4</div>
+                                <span>Contacto</span>
+                            </div>
+                        </div>
+
+                        <!-- Step 1: Location -->
+                        <div class="form-step active" data-step="1">
+                            <h3><i class="fas fa-map-marker-alt"></i> Localização</h3>
+
+                            <div class="form-group">
+                                <label for="municipality">
+                                    <i class="fas fa-city"></i> Município *
+                                </label>
+                                <select id="municipality" required>
+                                    <option value="">Carregando municípios...</option>
+                                </select>
+                                <small>Selecione o município onde pretende a recolha</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="address">
+                                    <i class="fas fa-home"></i> Morada Completa *
+                                </label>
+                                <input type="text" id="address" required
+                                    placeholder="Rua, número, código postal">
+                                <small>Exemplo: Rua de Aveiro, 123, 3810-123 Aveiro</small>
+                            </div>
+
+                            <button type="button" class="btn btn-next" onclick="nextStep()">
+                                Próximo <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- Step 2: Items -->
+                        <div class="form-step" data-step="2">
+                            <h3><i class="fas fa-box"></i> Descrição dos Itens</h3>
+
+                            <div class="form-group">
+                                <label for="itemDescription">
+                                    <i class="fas fa-list"></i> O que pretende recolher? *
+                                </label>
+                                <textarea id="itemDescription" required rows="5"
+                                    placeholder="Descreva os itens volumosos que pretende remover...&#10;Exemplo: Sofá velho de 3 lugares, duas cadeiras de madeira, mesa de centro"></textarea>
+                                <div class="char-counter">
+                                    <span id="charCount">0</span> / 500 caracteres
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="numberOfItems">
+                                    <i class="fas fa-calculator"></i> Quantidade de Itens *
+                                </label>
+                                <div class="number-input">
+                                    <button type="button" onclick="decrementItems()">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" id="numberOfItems" min="1" max="5" value="1" required readonly>
+                                    <button type="button" onclick="incrementItems()">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <small>Máximo de 5 itens por pedido</small>
+                            </div>
+
+                            <div class="step-buttons">
+                                <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                                    <i class="fas fa-arrow-left"></i> Anterior
+                                </button>
+                                <button type="button" class="btn btn-next" onclick="nextStep()">
+                                    Próximo <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Schedule -->
+                        <div class="form-step" data-step="3">
+                            <h3><i class="fas fa-calendar-alt"></i> Agendamento</h3>
+
+                            <div class="form-group">
+                                <label for="collectionDate">
+                                    <i class="fas fa-calendar-check"></i> Data de Recolha *
+                                </label>
+                                <input type="date" id="collectionDate" required>
+                                <small>Mínimo de 2 dias de antecedência</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-clock"></i> Período do Dia *
+                                </label>
+                                <div class="time-slots">
+                                    <label class="time-slot">
+                                        <input type="radio" name="timeSlot" value="MORNING" required>
+                                        <div class="slot-card">
+                                            <i class="fas fa-sun"></i>
+                                            <span>Manhã</span>
+                                            <small>08:00 - 12:00</small>
+                                        </div>
+                                    </label>
+                                    <label class="time-slot">
+                                        <input type="radio" name="timeSlot" value="AFTERNOON" required>
+                                        <div class="slot-card">
+                                            <i class="fas fa-cloud-sun"></i>
+                                            <span>Tarde</span>
+                                            <small>12:00 - 17:00</small>
+                                        </div>
+                                    </label>
+                                    <label class="time-slot">
+                                        <input type="radio" name="timeSlot" value="EVENING" required>
+                                        <div class="slot-card">
+                                            <i class="fas fa-moon"></i>
+                                            <span>Fim de Tarde</span>
+                                            <small>17:00 - 20:00</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="step-buttons">
+                                <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                                    <i class="fas fa-arrow-left"></i> Anterior
+                                </button>
+                                <button type="button" class="btn btn-next" onclick="nextStep()">
+                                    Próximo <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Contact -->
+                        <div class="form-step" data-step="4">
+                            <h3><i class="fas fa-address-card"></i> Informações de Contacto</h3>
+
+                            <div class="form-group">
+                                <label for="contactEmail">
+                                    <i class="fas fa-envelope"></i> Email
+                                </label>
+                                <input type="email" id="contactEmail"
+                                    placeholder="exemplo@email.com">
+                                <small>Opcional - para receber atualizações</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="contactPhone">
+                                    <i class="fas fa-phone"></i> Telefone
+                                </label>
+                                <input type="tel" id="contactPhone" pattern="[0-9]{9}"
+                                    placeholder="912345678">
+                                <small>Opcional - 9 dígitos</small>
+                            </div>
+
+                            <!-- Summary -->
+                            <div class="booking-summary">
+                                <h4><i class="fas fa-check-circle"></i> Resumo do Pedido</h4>
+                                <div class="summary-content" id="summaryContent">
+                                    <!-- Will be filled by JavaScript -->
+                                </div>
+                            </div>
+
+                            <div class="step-buttons">
+                                <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                                    <i class="fas fa-arrow-left"></i> Anterior
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-check"></i> Confirmar Pedido
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Check Booking Card -->
+                <div class="sidebar-card">
+                    <div class="card-header">
+                        <i class="fas fa-search"></i>
+                        <h3>Consultar Pedido</h3>
+                    </div>
+                    <p>Já tem um pedido? Use o token para consultar o estado.</p>
+
+                    <form id="checkBookingForm">
+                        <div class="form-group">
+                            <label for="accessToken">
+                                <i class="fas fa-key"></i> Token de Acesso
+                            </label>
+                            <input type="text" id="accessToken"
+                                placeholder="Cole o seu token aqui">
+                        </div>
+                        <button type="submit" class="btn btn-secondary btn-block">
+                            <i class="fas fa-search"></i> Consultar
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Help Card -->
+                <div class="sidebar-card help-card">
+                    <div class="card-header">
+                        <i class="fas fa-question-circle"></i>
+                        <h3>Precisa de Ajuda?</h3>
+                    </div>
+                    <ul class="help-list">
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Agende com 2 dias de antecedência</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Máximo 5 itens por pedido</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Guarde o token de acesso</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check"></i>
+                            <span>Acompanhe o estado online</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Details Modal -->
+        <div id="bookingDetails" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-file-alt"></i> Detalhes do Pedido</h2>
+                    <button class="close-btn" onclick="closeBookingDetails()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="bookingDetailsContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/citizen.js"></script>
+</body>
+</html>
