@@ -24,14 +24,14 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!-- SonarQube properties -->
-        <sonar.organization>your-org</sonar.organization>
+        <!-- SonarCloud properties -->
+        <sonar.organization>dani1244</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.projectKey>zeromones-waste-collection</sonar.projectKey>
-        <sonar.projectName>ZeroMonos Waste Collection System</sonar.projectName>
+        <sonar.projectKey>dani1244_tqs-indiv-portfolio-dani1244</sonar.projectKey>
+        <sonar.projectName>HW1 - ZeroMonos Waste Collection</sonar.projectName>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.exclusions>**/dto/**,**/model/**,**/config/**</sonar.exclusions>
+        <sonar.exclusions>**/dto/**,**/model/**,**/config/**,**/exception/**</sonar.exclusions>
     </properties>
     
     <dependencies>
