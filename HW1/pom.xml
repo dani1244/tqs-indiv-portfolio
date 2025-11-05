@@ -27,11 +27,17 @@
         <!-- SonarCloud properties -->
         <sonar.organization>dani1244</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.projectKey>dani1244_tqs-indiv-portfolio-dani1244</sonar.projectKey>
+        <sonar.projectKey>dani1244_tqs-hw1-zeromones</sonar.projectKey>
         <sonar.projectName>HW1 - ZeroMonos Waste Collection</sonar.projectName>
+        <sonar.projectBaseDir>${project.basedir}</sonar.projectBaseDir>
+        <sonar.sources>src/main/java</sonar.sources>
+        <sonar.tests>src/test/java</sonar.tests>
+        <sonar.java.binaries>target/classes</sonar.java.binaries>
+        <sonar.java.test.binaries>target/test-classes</sonar.java.test.binaries>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.exclusions>**/dto/**,**/model/**,**/config/**,**/exception/**</sonar.exclusions>
+        <sonar.scm.disabled>true</sonar.scm.disabled>
     </properties>
     
     <dependencies>

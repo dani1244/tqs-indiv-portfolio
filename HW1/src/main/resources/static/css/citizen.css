@@ -1,7 +1,7 @@
 /* Citizen Page Specific Styles */
 
 body.citizen-page {
-    background: #0f0f23;
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d1b3d 100%);
     min-height: 100vh;
 }
 
@@ -24,7 +24,7 @@ body.citizen-page {
 }
 
 .back-link:hover {
-    color: #4facfe;
+    color: #10b981;
     transform: translateX(-5px);
 }
 
@@ -42,8 +42,8 @@ body.citizen-page {
 }
 
 .header-icon i {
-    color: #667eea;
-    filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.5));
+    color: #6366f1;
+    filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
 }
 
 .header-content h1 {
@@ -85,12 +85,12 @@ body.citizen-page {
     gap: 15px;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+    border-bottom: 2px solid rgba(99, 102, 241, 0.3);
 }
 
 .card-header i {
     font-size: 1.8em;
-    color: #4facfe;
+    color: #10b981;
 }
 
 .card-header h2 {

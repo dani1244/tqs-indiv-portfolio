@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/bookings")
 public class BookingController {
@@ -22,13 +24,20 @@ public class BookingController {
         this.bookingService = bookingService;
     }
     
+    @GetMapping
+    public ResponseEntity<List<BookingResponseDTO>> getAllBookings() {
+        logger.info("GET /api/bookings - Fetching all bookings");
+        List<BookingResponseDTO> bookings = bookingService.getAllBookings();
+        return ResponseEntity.ok(bookings);
+    }
+
     @PostMapping
     public ResponseEntity<BookingResponseDTO> createBooking(@Valid @RequestBody BookingRequestDTO dto) {
         logger.info("POST /api/bookings - Creating new booking");
         BookingResponseDTO response = bookingService.createBooking(dto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-    
+
     @GetMapping("/{token}")
     public ResponseEntity<BookingResponseDTO> getBookingByToken(@PathVariable String token) {
         logger.info("GET /api/bookings/{} - Fetching booking", token);
