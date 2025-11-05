@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área do Cidadão - ZeroMonos</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/citizen.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="citizen-page">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const API_BASE = '/api';
+
+        function CitizenApp() {
+            const [currentStep, setCurrentStep] = useState(1);
+            const [municipalities, setMunicipalities] = useState([]);
+            const [alert, setAlert] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [bookingDetails, setBookingDetails] = useState(null);
+            const [formData, setFormData] = useState({
+                municipality: '',
+                address: '',
+                itemDescription: '',
+                numberOfItems: 1,
+                collectionDate: '',
+                timeSlot: '',
+                contactEmail: '',
+                contactPhone: ''
+            });
+
+            useEffect(() => {
+                loadMunicipalities();
+            }, []);
+
+            const loadMunicipalities = async () => {
+                try {
+                    const response = await fetch(`${API_BASE}/municipalities`);
+                    const data = await response.json();
+                    setMunicipalities(data);
+                } catch (error) {
+                    showAlert('Erro ao carregar municípios: ' + error.message, 'error');
+                }
+            };
+
+            const showAlert = (message, type) => {
+                setAlert({ message, type });
+                setTimeout(() => setAlert(null), 5000);
+            };
+
+            const handleInputChange = (field, value) => {
+                setFormData(prev => ({ ...prev, [field]: value }));
+            };
+
+            const validateStep = (step) => {
+                switch(step) {
+                    case 1:
+                        if (!formData.municipality) {
+                            showAlert('Por favor, selecione um município', 'error');
+                            return false;
+                        }
+                        if (!formData.address || formData.address.length < 10) {
+                            showAlert('Por favor, insira uma morada completa (mínimo 10 caracteres)', 'error');
+                            return false;
+                        }
+                        return true;
+                    case 2:
+                        if (!formData.itemDescription || formData.itemDescription.length < 10) {
+                            showAlert('Descrição deve ter pelo menos 10 caracteres', 'error');
+                            return false;
+                        }
+                        if (formData.itemDescription.length > 500) {
+                            showAlert('Descrição não pode exceder 500 caracteres', 'error');
+                            return false;
+                        }
+                        return true;
+                    case 3:
+                        if (!formData.collectionDate) {
+                            showAlert('Por favor, selecione uma data', 'error');
+                            return false;
+                        }
+                        if (!formData.timeSlot) {
+                            showAlert('Por favor, selecione um período', 'error');
+                            return false;
+                        }
+                        return true;
+                    default:
+                        return true;
+                }
+            };
+
+            const nextStep = () => {
+                if (!validateStep(currentStep)) return;
+                if (currentStep < 4) setCurrentStep(currentStep + 1);
+            };
+
+            const prevStep = () => {
+                if (currentStep > 1) setCurrentStep(currentStep - 1);
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+
+                try {
+                    const response = await fetch(`${API_BASE}/bookings`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.errors ? Object.values(error.errors).join(', ') : 'Erro ao criar pedido');
+                    }
+
+                    const result = await response.json();
+                    showAlert('Pedido criado com sucesso! Token: ' + result.accessToken, 'success');
+
+                    // Reset form
+                    setFormData({
+                        municipality: '',
+                        address: '',
+                        itemDescription: '',
+                        numberOfItems: 1,
+                        collectionDate: '',
+                        timeSlot: '',
+                        contactEmail: '',
+                        contactPhone: ''
+                    });
+                    setCurrentStep(1);
+                } catch (error) {
+                    showAlert(error.message, 'error');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const checkBooking = async (token) => {
+                try {
+                    const response = await fetch(`${API_BASE}/bookings/${token}`);
+                    if (!response.ok) throw new Error('Pedido não encontrado');
+                    const data = await response.json();
+                    setBookingDetails(data);
+                } catch (error) {
+                    showAlert(error.message, 'error');
+                }
+            };
+
+            const getMinDate = () => {
+                const date = new Date();
+                date.setDate(date.getDate() + 2);
+                return date.toISOString().split('T')[0];
+            };
+
+            return (
+                <>
+                    {/* Animated Background */}
+                    <div className="animated-bg">
+                        <div className="circle circle-1"></div>
+                        <div className="circle circle-2"></div>
+                    </div>
+
+                    <div className="container">
+                        {/* Header */}
+                        <div className="page-header">
+                            <a href="/" className="back-link">
+                                <i className="fas fa-arrow-left"></i> Voltar ao Início
+                            </a>
+                            <div className="header-content">
+                                <div className="header-icon">
+                                    <i className="fas fa-user-circle fa-3x"></i>
+                                </div>
+                                <h1>Área do Cidadão</h1>
+                                <p>Agende a recolha dos seus resíduos volumosos</p>
+                            </div>
+                        </div>
+
+                        {/* Alert Messages */}
+                        {alert && (
+                            <div className={`alert alert-${alert.type}`}>
+                                <i className={`fas fa-${alert.type === 'success' ? 'check-circle' : 'exclamation-triangle'}`}></i>
+                                {alert.message}
+                            </div>
+                        )}
+
+                        {/* Main Content */}
+                        <div className="content-grid">
+                            {/* Create Booking Section */}
+                            <div className="main-section">
+                                <div className="section-card">
+                                    <div className="card-header">
+                                        <i className="fas fa-edit"></i>
+                                        <h2>Novo Pedido de Recolha</h2>
+                                    </div>
+
+                                    <form onSubmit={handleSubmit}>
+                                        {/* Progress Steps */}
+                                        <div className="progress-steps">
+                                            {[1, 2, 3, 4].map(step => (
+                                                <div key={step} className={`step ${currentStep >= step ? 'active' : ''} ${currentStep > step ? 'completed' : ''}`}>
+                                                    <div className="step-circle">{step}</div>
+                                                    <span>
+                                                        {step === 1 ? 'Localização' :
+                                                         step === 2 ? 'Itens' :
+                                                         step === 3 ? 'Agendamento' : 'Contacto'}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Step 1: Location */}
+                                        {currentStep === 1 && (
+                                            <div className="form-step active">
+                                                <h3><i className="fas fa-map-marker-alt"></i> Localização</h3>
+                                                <div className="form-group">
+                                                    <label htmlFor="municipality">
+                                                        <i className="fas fa-city"></i> Município *
+                                                    </label>
+                                                    <select
+                                                        id="municipality"
+                                                        value={formData.municipality}
+                                                        onChange={(e) => handleInputChange('municipality', e.target.value)}
+                                                        required
+                                                    >
+                                                        <option value="">Selecione um município...</option>
+                                                        {municipalities.map(mun => (
+                                                            <option key={mun.name} value={mun.name}>{mun.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div className="form-group">
+                                                    <label htmlFor="address">
+                                                        <i className="fas fa-home"></i> Morada Completa *
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        id="address"
+                                                        value={formData.address}
+                                                        onChange={(e) => handleInputChange('address', e.target.value)}
+                                                        placeholder="Rua, número, código postal"
+                                                        required
+                                                    />
+                                                </div>
+                                                <button type="button" className="btn btn-next" onClick={nextStep}>
+                                                    Próximo <i className="fas fa-arrow-right"></i>
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {/* Step 2: Items */}
+                                        {currentStep === 2 && (
+                                            <div className="form-step active">
+                                                <h3><i className="fas fa-box"></i> Descrição dos Itens</h3>
+                                                <div className="form-group">
+                                                    <label htmlFor="itemDescription">
+                                                        <i className="fas fa-list"></i> O que pretende recolher? *
+                                                    </label>
+                                                    <textarea
+                                                        id="itemDescription"
+                                                        value={formData.itemDescription}
+                                                        onChange={(e) => handleInputChange('itemDescription', e.target.value)}
+                                                        rows="5"
+                                                        placeholder="Descreva os itens volumosos que pretende remover..."
+                                                        required
+                                                    ></textarea>
+                                                    <div className="char-counter">
+                                                        <span style={{color: formData.itemDescription.length > 500 ? '#f5576c' : '#4facfe'}}>
+                                                            {formData.itemDescription.length}
+                                                        </span> / 500 caracteres
+                                                    </div>
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>
+                                                        <i className="fas fa-calculator"></i> Quantidade de Itens *
+                                                    </label>
+                                                    <div className="number-input">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => formData.numberOfItems > 1 && handleInputChange('numberOfItems', formData.numberOfItems - 1)}
+                                                        >
+                                                            <i className="fas fa-minus"></i>
+                                                        </button>
+                                                        <input
+                                                            type="number"
+                                                            value={formData.numberOfItems}
+                                                            readOnly
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => formData.numberOfItems < 5 && handleInputChange('numberOfItems', formData.numberOfItems + 1)}
+                                                        >
+                                                            <i className="fas fa-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className="step-buttons">
+                                                    <button type="button" className="btn btn-secondary" onClick={prevStep}>
+                                                        <i className="fas fa-arrow-left"></i> Anterior
+                                                    </button>
+                                                    <button type="button" className="btn btn-next" onClick={nextStep}>
+                                                        Próximo <i className="fas fa-arrow-right"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Step 3: Schedule */}
+                                        {currentStep === 3 && (
+                                            <div className="form-step active">
+                                                <h3><i className="fas fa-calendar-alt"></i> Agendamento</h3>
+                                                <div className="form-group">
+                                                    <label htmlFor="collectionDate">
+                                                        <i className="fas fa-calendar-check"></i> Data de Recolha *
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        id="collectionDate"
+                                                        value={formData.collectionDate}
+                                                        onChange={(e) => handleInputChange('collectionDate', e.target.value)}
+                                                        min={getMinDate()}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>
+                                                        <i className="fas fa-clock"></i> Período do Dia *
+                                                    </label>
+                                                    <div className="time-slots">
+                                                        {['MORNING', 'AFTERNOON', 'EVENING'].map(slot => (
+                                                            <label key={slot} className="time-slot">
+                                                                <input
+                                                                    type="radio"
+                                                                    name="timeSlot"
+                                                                    value={slot}
+                                                                    checked={formData.timeSlot === slot}
+                                                                    onChange={(e) => handleInputChange('timeSlot', e.target.value)}
+                                                                    required
+                                                                />
+                                                                <div className="slot-card">
+                                                                    <i className={`fas fa-${slot === 'MORNING' ? 'sun' : slot === 'AFTERNOON' ? 'cloud-sun' : 'moon'}`}></i>
+                                                                    <span>{slot === 'MORNING' ? 'Manhã' : slot === 'AFTERNOON' ? 'Tarde' : 'Fim de Tarde'}</span>
+                                                                    <small>{slot === 'MORNING' ? '08:00 - 12:00' : slot === 'AFTERNOON' ? '12:00 - 17:00' : '17:00 - 20:00'}</small>
+                                                                </div>
+                                                            </label>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div className="step-buttons">
+                                                    <button type="button" className="btn btn-secondary" onClick={prevStep}>
+                                                        <i className="fas fa-arrow-left"></i> Anterior
+                                                    </button>
+                                                    <button type="button" className="btn btn-next" onClick={nextStep}>
+                                                        Próximo <i className="fas fa-arrow-right"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Step 4: Contact */}
+                                        {currentStep === 4 && (
+                                            <div className="form-step active">
+                                                <h3><i className="fas fa-address-card"></i> Informações de Contacto</h3>
+                                                <div className="form-group">
+                                                    <label htmlFor="contactEmail">
+                                                        <i className="fas fa-envelope"></i> Email
+                                                    </label>
+                                                    <input
+                                                        type="email"
+                                                        id="contactEmail"
+                                                        value={formData.contactEmail}
+                                                        onChange={(e) => handleInputChange('contactEmail', e.target.value)}
+                                                        placeholder="exemplo@email.com"
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label htmlFor="contactPhone">
+                                                        <i className="fas fa-phone"></i> Telefone
+                                                    </label>
+                                                    <input
+                                                        type="tel"
+                                                        id="contactPhone"
+                                                        value={formData.contactPhone}
+                                                        onChange={(e) => handleInputChange('contactPhone', e.target.value)}
+                                                        pattern="[0-9]{9}"
+                                                        placeholder="912345678"
+                                                    />
+                                                </div>
+                                                <div className="booking-summary">
+                                                    <h4><i className="fas fa-check-circle"></i> Resumo do Pedido</h4>
+                                                    <div className="summary-content">
+                                                        <p><strong>Município:</strong> {formData.municipality}</p>
+                                                        <p><strong>Morada:</strong> {formData.address}</p>
+                                                        <p><strong>Itens:</strong> {formData.numberOfItems} - {formData.itemDescription.substring(0, 50)}...</p>
+                                                        <p><strong>Data:</strong> {formData.collectionDate}</p>
+                                                        <p><strong>Período:</strong> {formData.timeSlot}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="step-buttons">
+                                                    <button type="button" className="btn btn-secondary" onClick={prevStep}>
+                                                        <i className="fas fa-arrow-left"></i> Anterior
+                                                    </button>
+                                                    <button type="submit" className="btn btn-success" disabled={loading}>
+                                                        {loading ? 'Aguarde...' : <><i className="fas fa-check"></i> Confirmar Pedido</>}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </form>
+                                </div>
+                            </div>
+
+                            {/* Sidebar */}
+                            <div className="sidebar">
+                                <div className="sidebar-card">
+                                    <div className="card-header">
+                                        <i className="fas fa-search"></i>
+                                        <h3>Consultar Pedido</h3>
+                                    </div>
+                                    <p>Já tem um pedido? Use o token para consultar o estado.</p>
+                                    <form onSubmit={(e) => { e.preventDefault(); checkBooking(e.target.token.value); }}>
+                                        <div className="form-group">
+                                            <label htmlFor="accessToken">
+                                                <i className="fas fa-key"></i> Token de Acesso
+                                            </label>
+                                            <input type="text" name="token" placeholder="Cole o seu token aqui" />
+                                        </div>
+                                        <button type="submit" className="btn btn-secondary btn-block">
+                                            <i className="fas fa-search"></i> Consultar
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div className="sidebar-card help-card">
+                                    <div className="card-header">
+                                        <i className="fas fa-question-circle"></i>
+                                        <h3>Precisa de Ajuda?</h3>
+                                    </div>
+                                    <ul className="help-list">
+                                        <li><i className="fas fa-check"></i> <span>Agende com 2 dias de antecedência</span></li>
+                                        <li><i className="fas fa-check"></i> <span>Máximo 5 itens por pedido</span></li>
+                                        <li><i className="fas fa-check"></i> <span>Guarde o token de acesso</span></li>
+                                        <li><i className="fas fa-check"></i> <span>Acompanhe o estado online</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Booking Details Modal */}
+                        {bookingDetails && (
+                            <div className="modal" onClick={() => setBookingDetails(null)}>
+                                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                                    <div className="modal-header">
+                                        <h2><i className="fas fa-file-alt"></i> Detalhes do Pedido</h2>
+                                        <button className="close-btn" onClick={() => setBookingDetails(null)}>
+                                            <i className="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div className="booking-info">
+                                        <p><strong>ID:</strong> {bookingDetails.id}</p>
+                                        <p><strong>Município:</strong> {bookingDetails.municipality}</p>
+                                        <p><strong>Estado:</strong> <span className={`status-badge status-${bookingDetails.status}`}>{bookingDetails.status}</span></p>
+                                        <p><strong>Data de Recolha:</strong> {bookingDetails.collectionDate}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </>
+            );
+        }
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<CitizenApp />);
+    </script>
+</body>
+</html>

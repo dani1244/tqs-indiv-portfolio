@@ -1,0 +1,574 @@
+/* Citizen Page Specific Styles */
+
+body.citizen-page {
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d1b3d 100%);
+    min-height: 100vh;
+}
+
+/* Page Header */
+.page-header {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 40px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.95em;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+}
+
+.back-link:hover {
+    color: #10b981;
+    transform: translateX(-5px);
+}
+
+.header-content {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+}
+
+.header-icon {
+    margin-bottom: 20px;
+}
+
+.header-icon i {
+    color: #6366f1;
+    filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
+}
+
+.header-content h1 {
+    font-size: 2.5em;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.header-content p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1em;
+}
+
+/* Content Grid */
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.main-section {
+    position: relative;
+    z-index: 1;
+}
+
+/* Section Card */
+.section-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 40px;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+}
+
+.card-header i {
+    font-size: 1.8em;
+    color: #10b981;
+}
+
+.card-header h2 {
+    color: white;
+    font-size: 1.8em;
+    margin: 0;
+}
+
+/* Progress Steps */
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.progress-steps::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 0;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+    flex: 1;
+}
+
+.step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 700;
+    transition: all 0.3s;
+}
+
+.step span {
+    font-size: 0.85em;
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s;
+}
+
+.step.active .step-circle {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-color: #667eea;
+    color: white;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.step.active span {
+    color: white;
+    font-weight: 600;
+}
+
+.step.completed .step-circle {
+    background: #4facfe;
+    border-color: #4facfe;
+    color: white;
+}
+
+.step.completed span {
+    color: #4facfe;
+}
+
+/* Form Steps */
+.form-step {
+    display: none;
+    animation: fadeIn 0.4s;
+}
+
+.form-step.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-step h3 {
+    color: white;
+    font-size: 1.5em;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.form-step h3 i {
+    color: #4facfe;
+}
+
+/* Form Elements Override for Citizen Page */
+body.citizen-page .form-group {
+    margin-bottom: 25px;
+}
+
+body.citizen-page .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+body.citizen-page .form-group label i {
+    color: #4facfe;
+}
+
+body.citizen-page .form-group input,
+body.citizen-page .form-group select,
+body.citizen-page .form-group textarea {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+body.citizen-page .form-group input::placeholder,
+body.citizen-page .form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+body.citizen-page .form-group input:focus,
+body.citizen-page .form-group select:focus,
+body.citizen-page .form-group textarea:focus {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+body.citizen-page .form-group small {
+    display: block;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85em;
+    margin-top: 5px;
+}
+
+/* Character Counter */
+.char-counter {
+    text-align: right;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85em;
+    margin-top: 5px;
+}
+
+#charCount {
+    color: #4facfe;
+    font-weight: 600;
+}
+
+/* Number Input */
+.number-input {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.number-input button {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    background: rgba(79, 172, 254, 0.2);
+    border: 1px solid rgba(79, 172, 254, 0.3);
+    color: #4facfe;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.number-input button:hover {
+    background: rgba(79, 172, 254, 0.3);
+    transform: scale(1.1);
+}
+
+.number-input input {
+    flex: 1;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: 700;
+}
+
+/* Time Slots */
+.time-slots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.time-slot {
+    cursor: pointer;
+}
+
+.time-slot input[type="radio"] {
+    display: none;
+}
+
+.slot-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.slot-card i {
+    font-size: 2em;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 10px;
+    display: block;
+}
+
+.slot-card span {
+    display: block;
+    color: white;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.slot-card small {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85em;
+}
+
+.time-slot input:checked + .slot-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+    border-color: #667eea;
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+}
+
+.time-slot input:checked + .slot-card i {
+    color: #4facfe;
+}
+
+.time-slot:hover .slot-card {
+    transform: translateY(-5px);
+    border-color: rgba(79, 172, 254, 0.5);
+}
+
+/* Booking Summary */
+.booking-summary {
+    background: rgba(79, 172, 254, 0.1);
+    border: 1px solid rgba(79, 172, 254, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 25px 0;
+}
+
+.booking-summary h4 {
+    color: white;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.booking-summary h4 i {
+    color: #4facfe;
+}
+
+.summary-content {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.8;
+}
+
+.summary-item {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-label {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9em;
+}
+
+.summary-value {
+    color: white;
+    font-weight: 600;
+}
+
+/* Step Buttons */
+.step-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.step-buttons button {
+    flex: 1;
+}
+
+.btn-next {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+body.citizen-page .btn-success {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+/* Sidebar */
+.sidebar {
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 20px;
+}
+
+.sidebar-card .card-header {
+    border-bottom: 2px solid rgba(79, 172, 254, 0.3);
+}
+
+.sidebar-card h3 {
+    font-size: 1.3em;
+    color: white;
+    margin: 0;
+}
+
+.sidebar-card p {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    margin: 15px 0;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Help Card */
+.help-card {
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(0, 242, 254, 0.1));
+}
+
+.help-list {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 0 0;
+}
+
+.help-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    color: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.help-list li:last-child {
+    border-bottom: none;
+}
+
+.help-list i {
+    color: #4facfe;
+    font-size: 1.1em;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-content {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.4s;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-header h2 {
+    color: white;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.close-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    background: rgba(255, 87, 108, 0.3);
+    transform: rotate(90deg);
+}
+
+#bookingDetailsContent {
+    padding: 30px;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        order: 2;
+    }
+
+    .time-slots {
+        grid-template-columns: 1fr;
+    }
+
+    .progress-steps {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .step span {
+        font-size: 0.75em;
+    }
+}

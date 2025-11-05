@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZeroMonos - Sistema de Recolha de Resíduos</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="landing-page">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function LandingPage() {
+            const [bookingCount, setBookingCount] = useState(0);
+            const [isLoading, setIsLoading] = useState(true);
+
+            useEffect(() => {
+                // Fetch booking count
+                fetch('/api/bookings')
+                    .then(response => response.json())
+                    .then(data => {
+                        setBookingCount(data.length);
+                        setIsLoading(false);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching bookings:', error);
+                        setIsLoading(false);
+                    });
+            }, []);
+
+            return (
+                <>
+                    {/* Animated Background */}
+                    <div className="animated-bg">
+                        <div className="circle circle-1"></div>
+                        <div className="circle circle-2"></div>
+                        <div className="circle circle-3"></div>
+                    </div>
+
+                    <div className="container">
+                        {/* Hero Section */}
+                        <div className="hero-section">
+                            <div className="logo-container">
+                                <i className="fas fa-recycle fa-4x"></i>
+                            </div>
+                            <h1 className="hero-title">ZeroMonos</h1>
+                            <p className="hero-subtitle">Sistema Inteligente de Recolha de Resíduos Volumosos</p>
+                            <div className="hero-stats">
+                                <div className="stat-item">
+                                    <i className="fas fa-city"></i>
+                                    <span className="stat-number">308</span>
+                                    <span className="stat-label">Municípios</span>
+                                </div>
+                                <div className="stat-item">
+                                    <i className="fas fa-truck-pickup"></i>
+                                    <span className="stat-number">
+                                        {isLoading ? '...' : bookingCount}
+                                    </span>
+                                    <span className="stat-label">Recolhas Agendadas</span>
+                                </div>
+                                <div className="stat-item">
+                                    <i className="fas fa-leaf"></i>
+                                    <span className="stat-number">100%</span>
+                                    <span className="stat-label">Sustentável</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Navigation Cards */}
+                        <div className="nav-cards">
+                            <div className="nav-card citizen-card" onClick={() => window.location.href = '/citizen.html'}>
+                                <div className="card-icon">
+                                    <i className="fas fa-user-circle fa-3x"></i>
+                                </div>
+                                <h3>Área do Cidadão</h3>
+                                <p>Agende a recolha dos seus resíduos volumosos de forma rápida e simples</p>
+                                <ul className="feature-list">
+                                    <li><i className="fas fa-check"></i> Criar novo pedido</li>
+                                    <li><i className="fas fa-check"></i> Consultar estado</li>
+                                    <li><i className="fas fa-check"></i> Cancelar recolha</li>
+                                </ul>
+                                <button className="btn-card">
+                                    Acessar <i className="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+
+                            <div className="nav-card staff-card" onClick={() => window.location.href = '/staff.html'}>
+                                <div className="card-icon">
+                                    <i className="fas fa-user-shield fa-3x"></i>
+                                </div>
+                                <h3>Área do Staff</h3>
+                                <p>Gerir pedidos de recolha, atualizar estados e monitorizar operações</p>
+                                <ul className="feature-list">
+                                    <li><i className="fas fa-check"></i> Gerir todos os pedidos</li>
+                                    <li><i className="fas fa-check"></i> Filtrar por município</li>
+                                    <li><i className="fas fa-check"></i> Atualizar estados</li>
+                                </ul>
+                                <button className="btn-card btn-staff">
+                                    Entrar <i className="fas fa-lock"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* How It Works Section */}
+                        <div className="how-it-works">
+                            <h2 className="section-title">
+                                <i className="fas fa-info-circle"></i> Como Funciona
+                            </h2>
+                            <div className="steps-grid">
+                                <div className="step-card">
+                                    <div className="step-number">1</div>
+                                    <div className="step-icon">
+                                        <i className="fas fa-edit"></i>
+                                    </div>
+                                    <h4>Criar Pedido</h4>
+                                    <p>Preencha o formulário com os detalhes dos itens a recolher e a morada</p>
+                                </div>
+
+                                <div className="step-card">
+                                    <div className="step-number">2</div>
+                                    <div className="step-icon">
+                                        <i className="fas fa-key"></i>
+                                    </div>
+                                    <h4>Receber Token</h4>
+                                    <p>Guarde o código de acesso único para consultar o seu pedido</p>
+                                </div>
+
+                                <div className="step-card">
+                                    <div className="step-number">3</div>
+                                    <div className="step-icon">
+                                        <i className="fas fa-calendar-check"></i>
+                                    </div>
+                                    <h4>Agendar Data</h4>
+                                    <p>Escolha a data e período do dia para a recolha (mínimo 2 dias)</p>
+                                </div>
+
+                                <div className="step-card">
+                                    <div className="step-number">4</div>
+                                    <div className="step-icon">
+                                        <i className="fas fa-search"></i>
+                                    </div>
+                                    <h4>Acompanhar</h4>
+                                    <p>Consulte o estado do pedido a qualquer momento usando o token</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="footer">
+                            <p><i className="fas fa-code"></i> Desenvolvido para TQS - Universidade de Aveiro</p>
+                            <p className="footer-links">
+                                <a href="https://github.com" target="_blank"><i className="fab fa-github"></i> GitHub</a>
+                                <span className="separator">•</span>
+                                <a href="#"><i className="fas fa-file-alt"></i> Documentação</a>
+                            </p>
+                        </div>
+                    </div>
+                </>
+            );
+        }
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<LandingPage />);
+    </script>
+</body>
+</html>
