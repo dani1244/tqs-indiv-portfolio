@@ -27,8 +27,8 @@
         <!-- SonarCloud properties -->
         <sonar.organization>dani1244</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.projectKey>dani1244_tqs-hw1-zeromones</sonar.projectKey>
-        <sonar.projectName>HW1 - ZeroMonos Waste Collection</sonar.projectName>
+        <sonar.projectKey>dani1243_zeromonos</sonar.projectKey>
+        <sonar.projectName>ZeroMonos</sonar.projectName>
         <sonar.projectBaseDir>${project.basedir}</sonar.projectBaseDir>
         <sonar.sources>src/main/java</sonar.sources>
         <sonar.tests>src/test/java</sonar.tests>
