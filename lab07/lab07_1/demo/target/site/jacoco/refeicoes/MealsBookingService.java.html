@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MealsBookingService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">meals-booking-service</a> &gt; <a href="index.source.html" class="el_package">refeicoes</a> &gt; <span class="el_source">MealsBookingService.java</span></div><h1>MealsBookingService.java</h1><pre class="source lang-java linenums">package refeicoes;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class MealsBookingService {
+<span class="fc" id="L10">    private final Map&lt;String, Reservation&gt; reservationsByToken = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="fc" id="L11">    private final Map&lt;String, Set&lt;String&gt;&gt; studentReservationsByShift = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="fc" id="L12">    private final Map&lt;String, Integer&gt; shiftCapacity = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="fc" id="L13">    private final Map&lt;String, Integer&gt; currentBookingsPerShift = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="fc" id="L14">    private final int defaultCapacity = 100;</span>
+    
+<span class="fc" id="L16">    public MealsBookingService() {</span>
+        // Initialize default capacities
+<span class="fc" id="L18">        shiftCapacity.put(&quot;lunch&quot;, defaultCapacity);</span>
+<span class="fc" id="L19">        shiftCapacity.put(&quot;dinner&quot;, defaultCapacity);</span>
+<span class="fc" id="L20">    }</span>
+    
+    public Reservation bookMeal(MealBookingRequest request) {
+<span class="fc" id="L23">        validateBookingRequest(request);</span>
+        
+<span class="fc" id="L25">        String shiftKey = request.getServiceShift();</span>
+<span class="fc" id="L26">        currentBookingsPerShift.putIfAbsent(shiftKey, 0);</span>
+        
+        // Check capacity
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (currentBookingsPerShift.get(shiftKey) &gt;= shiftCapacity.getOrDefault(shiftKey, defaultCapacity)) {</span>
+<span class="fc" id="L30">            throw new IllegalStateException(&quot;No available spots for this shift&quot;);</span>
+        }
+        
+        // Create reservation
+<span class="fc" id="L34">        Reservation reservation = new Reservation(request.getStudentId(), request.getServiceShift());</span>
+        
+        // Store reservation
+<span class="fc" id="L37">        reservationsByToken.put(reservation.getToken(), reservation);</span>
+<span class="fc" id="L38">        studentReservationsByShift</span>
+<span class="fc" id="L39">            .computeIfAbsent(request.getStudentId(), k -&gt; new HashSet&lt;&gt;())</span>
+<span class="fc" id="L40">            .add(request.getServiceShift());</span>
+<span class="fc" id="L41">        currentBookingsPerShift.merge(shiftKey, 1, Integer::sum);</span>
+        
+<span class="fc" id="L43">        return reservation;</span>
+    }
+    
+    public Optional&lt;Reservation&gt; getReservation(String token) {
+<span class="fc" id="L47">        return Optional.ofNullable(reservationsByToken.get(token));</span>
+    }
+    
+    public boolean verifyReservation(String token) {
+<span class="fc" id="L51">        Reservation reservation = reservationsByToken.get(token);</span>
+<span class="fc bfc" id="L52" title="All 6 branches covered.">        return reservation != null &amp;&amp; !reservation.isUsed() &amp;&amp; !reservation.isCancelled();</span>
+    }
+    
+    public boolean checkIn(String token) {
+<span class="fc" id="L56">        Reservation reservation = reservationsByToken.get(token);</span>
+<span class="fc bfc" id="L57" title="All 6 branches covered.">        if (reservation == null || reservation.isUsed() || reservation.isCancelled()) {</span>
+<span class="fc" id="L58">            return false;</span>
+        }
+        
+<span class="fc" id="L61">        reservation.markAsUsed();</span>
+<span class="fc" id="L62">        currentBookingsPerShift.merge(reservation.getServiceShift(), -1, Integer::sum);</span>
+<span class="fc" id="L63">        return true;</span>
+    }
+    
+    public boolean cancelReservation(String token) {
+<span class="fc" id="L67">        Reservation reservation = reservationsByToken.get(token);</span>
+<span class="pc bpc" id="L68" title="1 of 6 branches missed.">        if (reservation == null || reservation.isUsed() || reservation.isCancelled()) {</span>
+<span class="fc" id="L69">            return false;</span>
+        }
+        
+<span class="fc" id="L72">        reservation.cancel();</span>
+<span class="fc" id="L73">        studentReservationsByShift.get(reservation.getStudentId()).remove(reservation.getServiceShift());</span>
+<span class="fc" id="L74">        currentBookingsPerShift.merge(reservation.getServiceShift(), -1, Integer::sum);</span>
+<span class="fc" id="L75">        return true;</span>
+    }
+    
+    public void setShiftCapacity(String shift, int capacity) {
+<span class="fc" id="L79">        shiftCapacity.put(shift, capacity);</span>
+<span class="fc" id="L80">    }</span>
+    
+    public int getAvailableSpots(String shift) {
+<span class="fc" id="L83">        int current = currentBookingsPerShift.getOrDefault(shift, 0);</span>
+<span class="fc" id="L84">        int capacity = shiftCapacity.getOrDefault(shift, defaultCapacity);</span>
+<span class="fc" id="L85">        return Math.max(0, capacity - current);</span>
+    }
+    
+    private void validateBookingRequest(MealBookingRequest request) {
+<span class="fc bfc" id="L89" title="All 4 branches covered.">        if (request.getStudentId() == null || request.getStudentId().trim().isEmpty()) {</span>
+<span class="fc" id="L90">            throw new IllegalArgumentException(&quot;Student ID is required&quot;);</span>
+        }
+<span class="fc bfc" id="L92" title="All 4 branches covered.">        if (request.getServiceShift() == null || request.getServiceShift().trim().isEmpty()) {</span>
+<span class="fc" id="L93">            throw new IllegalArgumentException(&quot;Service shift is required&quot;);</span>
+        }
+        
+        // Check if student already has reservation for this shift
+<span class="fc" id="L97">        Set&lt;String&gt; studentShifts = studentReservationsByShift.get(request.getStudentId());</span>
+<span class="fc bfc" id="L98" title="All 4 branches covered.">        if (studentShifts != null &amp;&amp; studentShifts.contains(request.getServiceShift())) {</span>
+<span class="fc" id="L99">            throw new IllegalStateException(&quot;Student already has a reservation for this shift&quot;);</span>
+        }
+<span class="fc" id="L101">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
