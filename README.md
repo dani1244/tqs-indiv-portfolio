@@ -1,3 +1,0 @@
-# ZeroMonos Waste Collection System
-
-
